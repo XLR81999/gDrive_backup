@@ -18,14 +18,14 @@ import (
 func FetchDriveService() (*drive.Service, error) {
 	// Replace with your client ID, client secret, and redirect URI
 	ctx := context.Background()
-	clientID := os.Getenv("CLIENT_ID")
-	clientSecret := os.Getenv("CLIENT_SECRET")
+	id := os.Getenv("CLIENT_ID")
+	sec := os.Getenv("CLIENT_SECRET")
 	redirectURL := "http://localhost:8080/auth/callback"
 
 	// Set up OAuth 2.0 configuration
 	config := &oauth2.Config{
-		ClientID:     clientID,
-		ClientSecret: clientSecret,
+		ClientID:     id,
+		ClientSecret: sec,
 		Scopes:       []string{"https://www.googleapis.com/auth/drive.readonly"},
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  "https://accounts.google.com/o/oauth2/auth",
