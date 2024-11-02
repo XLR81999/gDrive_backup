@@ -18,8 +18,8 @@ import (
 func FetchDriveService() (*drive.Service, error) {
 	// Replace with your client ID, client secret, and redirect URI
 	ctx := context.Background()
-	clientID := "929196752212-23t9ahscmk94jn4pa9pbidpivg706vjk.apps.googleusercontent.com"
-	clientSecret := "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"
+	clientID := "ENTER CLIENT ID"
+	clientSecret := "ENTER CLIENT SECRET"
 	redirectURL := "http://localhost:8080/auth/callback"
 
 	// Set up OAuth 2.0 configuration
