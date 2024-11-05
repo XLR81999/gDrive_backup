@@ -19,10 +19,14 @@ func ExitHandler(ctx context.Context, zw *zip.Writer, zipFile *os.File) {
 	for{
 		select{
 			case<-exit:
-				log.Print("Got interrupt signal, closing tasks")
+				// Lock Channels to prevent writing
+				channels.FileChannelLock = true
+				channels.FolderChannelLock = true
+
+				log.Print("Got interrupt signal, closing tasks, Wating 2 min before closing further processing")
 				close(channels.FolderChannel)
 				close(channels.FileChannel)
-				time.Sleep(15 * time.Second)
+				time.Sleep(120 * time.Second)
 				Cleanup(zw, zipFile)
 		}
 	}

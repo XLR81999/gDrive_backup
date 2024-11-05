@@ -73,7 +73,7 @@ func downloadFiles(service *drive.Service, folderID string, zw *zip.Writer) erro
 	for i := 0; i < 2; i++ {
 		go func() {
 			for folderID := range channels.FolderChannel {
-				fmt.Printf("Processing folder ID %s\n", folderID)
+				fmt.Printf("Processing folder %s\n", folderID["name"])
 				processor.ProcessFolder(service, folderID, zw)
 			}
 			log.Printf("Exiting Thread %v of folder thread", i)

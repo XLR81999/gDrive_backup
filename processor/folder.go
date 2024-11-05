@@ -2,6 +2,7 @@ package processor
 
 import (
 	"archive/zip"
+	"fmt"
 	"log"
 
 	channels "gDriveBackup/channels"
@@ -32,6 +33,13 @@ func ProcessFolder(service *drive.Service, folderMap map[string]string, zw *zip.
 
 		log.Printf("Found %v objects in folder %s", len(files.Files), path)
 
+		//Function to handle writng to closed channel upon abrupt exit
+		defer func(){
+			r := recover()
+			if r!=nil{
+				fmt.Printf("Stopping further processing due to unexpected shutdown")
+			}
+		}()
 		for _, file := range files.Files {
 			// log.Printf("Folder with name %s has parent %s\n", file.Name, file.Parents)
 			var filePath string
@@ -45,7 +53,9 @@ func ProcessFolder(service *drive.Service, folderMap map[string]string, zw *zip.
 				folderMap := make(map[string]string)
 				folderMap["id"] = file.Id
 				folderMap["path"] = filePath
-				channels.FolderChannel <- folderMap
+				if !channels.FolderChannelLock{
+					channels.FolderChannel <- folderMap
+				}
 			} else if  file.MimeType != "application/vnd.google-apps.shortcut"{
 				// log.Printf("File: %v\n", file)
 				fileMap := make(map[string]string)
@@ -53,7 +63,9 @@ func ProcessFolder(service *drive.Service, folderMap map[string]string, zw *zip.
 				fileMap["name"] = file.Name
 				fileMap["path"] = filePath
 				fileMap["mimeType"] = file.MimeType
-				channels.FileChannel <- fileMap
+				if !channels.FileChannelLock{
+					channels.FileChannel <- fileMap
+				}
 			}
 		}
 		pageToken = files.NextPageToken
@@ -61,7 +73,4 @@ func ProcessFolder(service *drive.Service, folderMap map[string]string, zw *zip.
 			break
 		}
 	}
-
-	// log.Printf("Folder channel has lag of %v", len(channels.FolderChannel))
-	// log.Printf("File channel has lag of %v", len(channels.FileChannel))
 }
